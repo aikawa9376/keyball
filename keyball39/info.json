@@ -1,0 +1,18 @@
+{
+    "manufacturer": "Yowkees",
+    "keyboard_name": "keyball39",
+    "maintainer": "M-aikawa",
+    "features": {
+        "bootmagic": false,
+        "command": false,
+        "console": false,
+        "extrakey": false,
+        "mousekey": false,
+        "nkro": false
+    },
+    "usb": {
+        "vid": "0x5957",
+        "pid": "0x0200",
+        "device_version": "0.0.1"
+    },
+}
