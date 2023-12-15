@@ -1,0 +1,6 @@
+RGBLIGHT_ENABLE = false
+
+OLED_ENABLE = yes
+COMBO_ENABLE = yes
+EXTRAFLAGS += -flto
+GRAVE_ESC_ENABLE = no  # 90バイト
