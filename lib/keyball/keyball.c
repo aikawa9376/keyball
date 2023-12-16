@@ -27,6 +27,8 @@ const uint8_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT / 100;
 const uint8_t CPI_MAX        = pmw3360_MAXCPI + 1;
 const uint8_t SCROLL_DIV_MAX = 7;
 
+uint16_t horizontal_flag = 0;
+
 keyball_t keyball = {
     .this_have_ball = false,
     .that_enable    = false,
@@ -197,6 +199,11 @@ static void motion_to_mouse_scroll(keyball_motion_t *m, report_mouse_t *r, bool 
     if (is_left) {
         r->h = -r->h;
         r->v = -r->v;
+    }
+    if (horizontal_flag == 1) {
+        r->v = 0;
+    } else if (horizontal_flag == 2) {
+        r->h = 0;
     }
 #elif KEYBALL_MODEL == 46
     r->h = clip2int8(x);

@@ -27,32 +27,55 @@
  *   SCRL_DVD(0x5DAE): スクロール除数を１つ下げます(min D0 = 1/1)← 最もスクロール速い
  */
 
-// enum custom_keycodes {
-  // KC_BACK_TO_LAYER0_BTN1 = KEYBALL_SAFE_RANGE,  // (0x5DAF): レイヤー0に遷移できるBTN1
-// };
+enum custom_keycodes {
+  KC_DOUBLE_CLICK_BTN1 = KEYBALL_SAFE_RANGE,
+  KC_TRIPLE_CLICK_BTN1,
+};
 
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   switch (keycode) {
+    case KC_DOUBLE_CLICK_BTN1:
+    case KC_TRIPLE_CLICK_BTN1: {
+      if (record->event.pressed) {
+        // キーダウン時
+        // `KC_DOUBLE_CLICK_BTN1`の場合
+        if (keycode == KC_DOUBLE_CLICK_BTN1) {
+          double_click_mouse_button1();  // マウスボタン1をダブルクリック
+        }
+        // `KC_TRIPLE_CLICK_BTN1`の場合
+        if (keycode == KC_TRIPLE_CLICK_BTN1) {
+          triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
+        }
+      } else {
+        if (click_layer && get_highest_layer(layer_state) == click_layer) {
+          // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+          enable_click_layer();
+          state = CLICKED;
+        }
+      }
+      return false;  // キーのデフォルトの動作をスキップする
+    }
+
     // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
-    // case KC_MS_BTN1:
-    // case KC_MS_BTN2:
-    // case KC_MS_BTN3:
-    // case KC_MS_BTN4:
-    // case KC_MS_BTN5: {
-    //   if (click_layer && get_highest_layer(layer_state) == click_layer) {
-    //     if (record->event.pressed) {
-    //       // キーダウン時: 状態をCLICKINGに設定
-    //       state = CLICKING;
-    //     } else {
-    //       // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-    //       enable_click_layer();
-    //       state = CLICKED;
-    //     }
-    //   }
-    //   return true;
-    // }
+    case KC_MS_BTN1:
+    case KC_MS_BTN2:
+    case KC_MS_BTN3:
+    case KC_MS_BTN4:
+    case KC_MS_BTN5: {
+      if (click_layer && get_highest_layer(layer_state) == click_layer) {
+        if (record->event.pressed) {
+          // キーダウン時: 状態をCLICKINGに設定
+          state = CLICKING;
+        } else {
+          // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+          enable_click_layer();
+          state = CLICKED;
+        }
+      }
+      return true;
+    }
   }
 
   return true;

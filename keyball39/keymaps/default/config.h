@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #define TAP_CODE_DELAY 5
-#define DYNAMIC_KEYMAP_LAYER_COUNT 7
+#define DYNAMIC_KEYMAP_LAYER_COUNT 5
 
 #define COMBO_COUNT 2
 
