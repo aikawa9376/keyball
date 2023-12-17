@@ -28,24 +28,30 @@
  */
 
 enum custom_keycodes {
-  KC_DOUBLE_CLICK_BTN1 = KEYBALL_SAFE_RANGE,
-  KC_TRIPLE_CLICK_BTN1,
+  KC_DBLB = KEYBALL_SAFE_RANGE,
+  KC_TRPB,
+  MC_TMUX,
+  MC_TMCP,
+  SCRL_HO,
+  SCRL_VR,
 };
+
+extern uint16_t horizontal_flag;
 
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   switch (keycode) {
-    case KC_DOUBLE_CLICK_BTN1:
-    case KC_TRIPLE_CLICK_BTN1: {
+    case KC_DBLB:
+    case KC_TRPB: {
       if (record->event.pressed) {
         // キーダウン時
-        // `KC_DOUBLE_CLICK_BTN1`の場合
-        if (keycode == KC_DOUBLE_CLICK_BTN1) {
+        // `KC_DBLB`の場合
+        if (keycode == KC_DBLB) {
           double_click_mouse_button1();  // マウスボタン1をダブルクリック
         }
-        // `KC_TRIPLE_CLICK_BTN1`の場合
-        if (keycode == KC_TRIPLE_CLICK_BTN1) {
+        // `KC_TRPB`の場合
+        if (keycode == KC_TRPB) {
           triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
         }
       } else {
@@ -56,6 +62,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       }
       return false;  // キーのデフォルトの動作をスキップする
+    }
+    // Tmuxのプレフィックス
+    case MC_TMUX: {
+      tap_code16(A(KC_SPACE));
+      return false;  // キーのデフォルトの動作をスキップする
+    }
+    // Tmuxのコピーモード
+    case MC_TMCP: {
+      tap_code16(A(KC_SPACE));
+      tap_code16(KC_SPACE);
+      return false;  // キーのデフォルトの動作をスキップする
+    }
+
+    // 水平に固定してスクロール
+    case SCRL_HO: {
+      if (record->event.pressed) {
+          horizontal_flag = 1;
+          keyball_set_scroll_mode(record->event.pressed);
+      } else {
+          horizontal_flag = 0;
+          keyball_set_scroll_mode(record->event.pressed);
+      }
+      return false;
+    }
+    // 垂直に固定してスクロール
+    case SCRL_VR: {
+      if (record->event.pressed) {
+          horizontal_flag = 2;
+          keyball_set_scroll_mode(record->event.pressed);
+      } else {
+          horizontal_flag = 0;
+          keyball_set_scroll_mode(record->event.pressed);
+      }
+      return false;
     }
 
     // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする

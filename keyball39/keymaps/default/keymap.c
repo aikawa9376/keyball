@@ -40,7 +40,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_EXLM  , KC_AT    , KC_HASH  , KC_DLR   , KC_PERC  ,                            KC_CIRC  , KC_AMPR  , KC_UNDS  , KC_EQL   , KC_BSLS  ,
         KC_LPRN  , KC_RPRN  , KC_LBRC  , KC_RBRC  , KC_PIPE  ,                            KC_ASTR  , KC_SLSH  , KC_GRV   , KC_DQT   , KC_QUOT  ,
         KC_LCBR  , KC_RCBR  , _______  , G(KC_V)  , G(KC_SPC),                            KC_PLUS  , KC_MINS  , KC_PGDN  , KC_PGUP  , KC_TILD  ,
-        _______  , _______  , _______  , _______  , _______  , _______  ,      KC_LCBR ,  KC_RCBR  , _______  , _______  , _______  , _______
+        _______  , _______  , _______  , MC_TMCP  , MC_TMUX  , _______  ,      KC_LCBR ,  KC_RCBR  , _______  , _______  , _______  , _______
     ),
 
     [2] = LAYOUT_universal(
@@ -51,15 +51,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [3] = LAYOUT_universal(
-        C(KC_Q)  , C(KC_W)  , _______  , _______  , _______   ,                            S(KC_LEFT)   ,S(KC_DOWN)   ,S(KC_UP)     ,S(KC_RGHT)   , _______  ,
-        _______  , _______  , G(KC_UP) ,G(KC_DOWN), C(KC_PGDN),                            KC_LEFT      ,KC_DOWN      ,KC_UP        ,KC_RGHT      , _______  ,
-        _______  , _______  , _______  , _______  , _______   ,                            LCAG(KC_SCLN),LCAG(KC_SLSH),LCAG(KC_LBRC),LCAG(KC_QUOT), _______  ,
+        C(KC_Q)  , C(KC_W)  , _______  , _______  , _______   ,                            S(KC_LEFT)   , S(KC_DOWN)  , S(KC_UP)    , S(KC_RGHT)  , _______  ,
+        _______  , _______  , C(KC_UP) ,C(KC_DOWN), C(KC_PGDN),                            KC_LEFT      , KC_DOWN     , KC_UP       , KC_RGHT     , _______  ,
+        _______  , _______  , _______  , _______  , _______   ,                            G(KC_SCLN)   , G(KC_SLSH)  , G(KC_LBRC)  , G(KC_QUOT)  , _______  ,
         _______  , _______  , _______  , _______  , _______   , _______  ,      _______ ,  _______      , _______     , _______     , _______     , _______
     ),
     [4] = LAYOUT_universal(
-        _______  , _______  , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-        KC_LALT  , KC_LSFT  , _______  ,KC_MS_BTN1, _______ ,                            _______  ,KC_MS_BTN1,KC_MS_BTN3,KC_MS_BTN2, _______  ,
-        _______  , _______  , _______  , _______  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
+        _______  , _______  , _______  , KC_TRPB  , _______  ,                            _______  , _______  , _______  , _______  , _______  ,
+        SCRL_HO  , KC_LSFT  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB ,                             _______  ,KC_MS_BTN1,KC_MS_BTN2, _______  , _______  ,
+        SCRL_VR  , _______  ,KC_MS_BTN3,KC_MS_BTN4, _______  ,                            _______  , _______  , _______  , _______  , _______  ,
         _______  , _______  , _______  , _______  , _______  , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
     )
 };
@@ -73,11 +73,43 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 #ifdef OLED_ENABLE
 
-#    include "lib/oledkit/oledkit.h"
+#include "lib/oledkit/oledkit.h"
 
 void oledkit_render_info_user(void) {
-    keyball_oled_render_keyinfo();
-    keyball_oled_render_ballinfo();
-    keyball_oled_render_layerinfo();
+  // デバッグ用に変数を表示する
+  // oled_write_P(PSTR("Debug:"), false);
+  // oled_write(get_u8_str(xxx, ' '), false);
+
+  keyball_oled_render_keyinfo();   // キー情報を表示
+  keyball_oled_render_ballinfo();  // トラックボール情報を表示
+
+  // <Layer>を表示する
+  oled_write_P(PSTR("Layer:"), false);
+  oled_write(get_u8_str(get_highest_layer(layer_state), ' '), false);
+
+  // <マウス移動量 / クリックレイヤーしきい値>を表示
+  // oled_write_P(PSTR(" MV:"), false);
+  // oled_write(get_u8_str(mouse_movement, ' '), false);
+  // oled_write_P(PSTR("/"), false);
+  // oled_write(get_u8_str(to_clickable_movement, ' '), false);
+
+  // <state>を表示
+  switch (state) {
+    case WAITING:
+      oled_write_ln_P(PSTR("  WAITING"), false);
+      break;
+    case CLICKABLE:
+      oled_write_ln_P(PSTR("  CLICKABLE"), false);
+      break;
+    case CLICKING:
+      oled_write_ln_P(PSTR("  CLICKING"), false);
+      break;
+    case CLICKED:
+      oled_write_ln_P(PSTR("  CLICKED"), false);
+      break;
+    case NONE:
+      oled_write_ln_P(PSTR("  NONE"), false);
+      break;
+  }
 }
 #endif
