@@ -146,14 +146,14 @@ static void adjust_mouse_speed (keyball_motion_t *m) {
     //
     if (movement_size > 300){
         speed_multiplier = 1.5;
-    } else if (movement_size > 200) {
+    } else if (movement_size > 150) {
         speed_multiplier = 1.3;
-    } else if (movement_size > 50) {
+    } else if (movement_size > 40) {
         speed_multiplier = 1.0;
-    } else if (movement_size > 30) {
-        speed_multiplier = 0.6;
-    } else if (movement_size > 20) {
-        speed_multiplier = 0.5;
+    } else if (movement_size > 35) {
+        speed_multiplier = 0.9;
+    } else if (movement_size > 25) {
+        speed_multiplier = 0.7;
     } else if (movement_size > 1) {
         speed_multiplier = 0.4;
     }
