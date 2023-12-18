@@ -34,9 +34,14 @@ enum custom_keycodes {
   MC_TMCP,
   SCRL_HO,
   SCRL_VR,
+  ALT_TAB,
+  AC_INS,
 };
 
 extern uint16_t horizontal_flag;
+
+bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
+uint16_t alt_tab_timer = 0;     // we will be using them soon.
 
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -65,14 +70,33 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     // Tmuxのプレフィックス
     case MC_TMUX: {
-      tap_code16(A(KC_SPACE));
+      if (record->event.pressed) {
+        tap_code16(A(KC_SPACE));
+      }
       return false;  // キーのデフォルトの動作をスキップする
     }
     // Tmuxのコピーモード
     case MC_TMCP: {
-      tap_code16(A(KC_SPACE));
-      tap_code16(KC_SPACE);
+      if (record->event.pressed) {
+        tap_code16(A(KC_SPACE));
+        tap_code16(KC_SPACE);
+      }
       return false;  // キーのデフォルトの動作をスキップする
+    }
+
+    // windows切り替え用
+    case ALT_TAB: {
+      if (record->event.pressed) {
+        if (!is_alt_tab_active) {
+          is_alt_tab_active = true;
+          register_code(KC_LALT);
+        }
+        alt_tab_timer = timer_read();
+        register_code(KC_TAB);
+      } else {
+        unregister_code(KC_TAB);
+      }
+      break;
     }
 
     // 水平に固定してスクロール
@@ -116,7 +140,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return true;
     }
+    case AC_INS: {
+      if (record->event.pressed) {
+        tap_code16(C(S(KC_C)));
+      }
+      return false;
+    }
   }
 
   return true;
+}
+
+void matrix_scan_user(void) { // The very important timer.
+  if (is_alt_tab_active) {
+    if (timer_elapsed(alt_tab_timer) > 1000) {
+      unregister_code(KC_LALT);
+      is_alt_tab_active = false;
+    }
+  }
 }

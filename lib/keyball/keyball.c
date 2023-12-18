@@ -201,9 +201,9 @@ static void motion_to_mouse_scroll(keyball_motion_t *m, report_mouse_t *r, bool 
         r->v = -r->v;
     }
     if (horizontal_flag == 1) {
-        r->v = 0;
-    } else if (horizontal_flag == 2) {
         r->h = 0;
+    } else if (horizontal_flag == 2) {
+        r->v = 0;
     }
 #elif KEYBALL_MODEL == 46
     r->h = clip2int8(x);
