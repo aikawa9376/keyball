@@ -58,16 +58,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [4] = LAYOUT_universal(
         SCRL_MO  , _______  , _______  , KC_TRPB  , _______  ,                            _______  , _______  , AC_INS   , _______  , _______  ,
-        SCRL_HO  , KC_LSFT  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB ,                             _______  ,KC_MS_BTN1,KC_MS_BTN2, _______  , _______  ,
+        SCRL_HO  , KC_LSFT  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB  ,                            _______  ,KC_MS_BTN1,KC_MS_BTN2, _______  , _______  ,
         SCRL_VR  , _______  ,KC_MS_BTN4,KC_MS_BTN5, _______  ,                            _______  , _______  , _______  , _______  , _______  ,
-        _______  , _______  , _______  , _______  , _______  , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
+        _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
     )
 };
 // clang-format on
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Auto enable scroll mode when the highest layer is 3
-    // keyball_set_scroll_mode(get_highest_layer(state) == 3);
+
+    // レイヤー移動のたびに新設したkeep_click_layerをオフにする
+    if(get_highest_layer(state) <= 3) {
+        keep_click_layer = false;
+    }
     return state;
 }
 

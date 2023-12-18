@@ -144,20 +144,18 @@ static void adjust_mouse_speed (keyball_motion_t *m) {
     int16_t movement_size = abs(m->x) + abs(m->y);
     float speed_multiplier = 1.0; // EDGE
     //
-    if (movement_size > 60){
+    if (movement_size > 300){
         speed_multiplier = 1.5;
-    } else if (movement_size > 30) {
-        speed_multiplier = 1.5;
-    } else if (movement_size > 5) {
+    } else if (movement_size > 200) {
+        speed_multiplier = 1.3;
+    } else if (movement_size > 50) {
         speed_multiplier = 1.0;
-    } else if (movement_size > 4) {
-        speed_multiplier = 0.9;
-    } else if (movement_size > 3) {
-        speed_multiplier = 0.7;
-    } else if (movement_size > 2) {
+    } else if (movement_size > 30) {
+        speed_multiplier = 0.6;
+    } else if (movement_size > 20) {
         speed_multiplier = 0.5;
     } else if (movement_size > 1) {
-        speed_multiplier = 0.2;
+        speed_multiplier = 0.4;
     }
     m->x = clip2int8((int16_t) (m->x * speed_multiplier));
     m->y = clip2int8((int16_t) (m->y * speed_multiplier));

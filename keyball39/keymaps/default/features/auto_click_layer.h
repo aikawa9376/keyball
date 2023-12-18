@@ -32,7 +32,7 @@ enum ball_state {
 enum ball_state state;  // 現在のクリック入力受付の状態
 uint16_t click_timer;   // タイマー。状態に応じて時間で判定する
 
-uint16_t clicked_stay_time = 5;     // CLICKEDの滞在時間（千分の一秒)。その後、クリックレイヤーが無効になる
+uint16_t clicked_stay_time = 1;     // CLICKEDの滞在時間（千分の一秒)。その後、クリックレイヤーが無効になる
 uint16_t clickable_stay_time = 2000;  // CLICKABLEの滞在時間（千分の一秒)。その後、クリックレイヤーが無効になる
 
 const int16_t to_clickable_movement = 5;  // クリックレイヤーが有効になるしきい値
@@ -40,6 +40,8 @@ const uint16_t click_layer = 4;           // マウス入力が可能になっ�
 
 int16_t mouse_record_threshold = 30;  // ポインターの動きを一時的に記録するフレーム数
 int16_t mouse_move_count_ratio = 5;   // ポインターの動きを再生する際の移動フレームの係数
+
+bool keep_click_layer = false;  // レイヤーを保持する
 
 // Modifierが絡むときの挙動が理想とは違ったので、一旦コメントアウト
 // const uint16_t ignore_disable_mouse_layer_keys[] = {KC_LANG1, KC_LANG2}; // この配列で指定されたキーはマウスレイヤー中に押下してもマウスレイヤーを解除しない
@@ -104,7 +106,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
       case CLICKABLE:
         // クリック可能状態が一定時間持続したら、クリックレイヤーを無効化
-        if (timer_elapsed(click_timer) > clickable_stay_time) {
+        if (timer_elapsed(click_timer) > clickable_stay_time && !keep_click_layer) {
           disable_click_layer();
         }
         break;
@@ -115,7 +117,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
       case CLICKED:
         // クリック後一定時間経過でクリックレイヤーを無効化
-        if (timer_elapsed(click_timer) > clicked_stay_time) {
+        if (timer_elapsed(click_timer) > clicked_stay_time && !keep_click_layer) {
           disable_click_layer();
         }
         break;

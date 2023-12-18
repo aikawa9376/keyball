@@ -36,6 +36,7 @@ enum custom_keycodes {
   SCRL_VR,
   ALT_TAB,
   AC_INS,
+  AC_KEP,
 };
 
 extern uint16_t horizontal_flag;
@@ -146,8 +147,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     }
+    case AC_KEP: {
+      if (record->event.pressed) {
+        keep_click_layer = true;
+      }
+      return false;
+    }
   }
 
+  disable_click_layer();
   return true;
 }
 
