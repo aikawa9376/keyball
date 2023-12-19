@@ -102,7 +102,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // 水平に固定してスクロール
     case SCRL_HO: {
-      if (record->event.pressed) {
+      if (record->event.pressed && !keyball_get_scroll_mode()) {
           horizontal_flag = 1;
           keyball_set_scroll_mode(record->event.pressed);
       } else {
@@ -113,7 +113,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     // 垂直に固定してスクロール
     case SCRL_VR: {
-      if (record->event.pressed) {
+      if (record->event.pressed && !keyball_get_scroll_mode()) {
           horizontal_flag = 2;
           keyball_set_scroll_mode(record->event.pressed);
       } else {
@@ -139,6 +139,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           state = CLICKED;
         }
       }
+      return true;
+    }
+    case LCTL_T(KC_ESC): {
       return true;
     }
     case AC_INS: {

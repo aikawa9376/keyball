@@ -53,13 +53,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [3] = LAYOUT_universal(
         G(KC_Q)  , C(KC_F4) , _______  , _______  , _______   ,                            S(KC_LEFT)   , S(KC_DOWN)  , S(KC_UP)    , S(KC_RGHT)  , _______  ,
-        _______  , _______  , C(KC_UP) ,C(KC_DOWN), C(KC_PGDN),                            KC_LEFT      , KC_DOWN     , KC_UP       , KC_RGHT     , MC_TMUX  ,
+        G(KC_A)  , _______  , C(KC_UP) ,C(KC_DOWN), C(KC_PGDN),                            KC_LEFT      , KC_DOWN     , KC_UP       , KC_RGHT     , MC_TMUX  ,
         _______  , _______  , _______  , _______  , _______   ,                            G(KC_SCLN)   , G(KC_SLSH)  , G(KC_LBRC)  , G(KC_QUOT)  , ALT_TAB  ,
         _______  , _______  , _______  , _______  , _______   , _______  ,      _______ ,  _______      , _______     , _______     , _______     , _______
     ),
     [4] = LAYOUT_universal(
         SCRL_MO  , _______  , _______  , KC_TRPB  , _______  ,                            _______  , _______  , AC_INS   , _______  , _______  ,
-        SCRL_HO  , KC_LSFT  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB  ,                            _______  ,KC_MS_BTN1,KC_MS_BTN2, _______  , _______  ,
+        SCRL_HO  , _______  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB  ,                            _______  ,KC_MS_BTN1,KC_MS_BTN2, _______  , _______  ,
         SCRL_VR  , _______  ,KC_MS_BTN4,KC_MS_BTN5, _______  ,                            _______  , SCRL_HO  , _______  , _______  , _______  ,
         _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
     )
