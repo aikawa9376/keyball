@@ -142,6 +142,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return true;
     }
     case LCTL_T(KC_ESC): {
+      if (!record->event.pressed) {
+        disable_click_layer();
+      }
       return true;
     }
     case AC_INS: {
