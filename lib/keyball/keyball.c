@@ -143,7 +143,7 @@ void pointing_device_driver_set_cpi(uint16_t cpi) {
 static void adjust_mouse_speed (keyball_motion_t *m) {
     int16_t movement_size = abs(m->x) + abs(m->y);
     float speed_multiplier = 1.0; // EDGE
-    //
+
     if (movement_size > 300){
         speed_multiplier = 1.5;
     } else if (movement_size > 150) {
