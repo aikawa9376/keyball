@@ -102,23 +102,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // 水平に固定してスクロール
     case SCRL_HO: {
-      if (record->event.pressed && !keyball_get_scroll_mode()) {
+      keyball_set_scroll_mode(record->event.pressed);
+
+      if (record->event.pressed) {
           horizontal_flag = 1;
-          keyball_set_scroll_mode(record->event.pressed);
+          state = CLICKING;
       } else {
           horizontal_flag = 0;
-          keyball_set_scroll_mode(record->event.pressed);
+          state = CLICKED;
       }
       return false;
     }
     // 垂直に固定してスクロール
     case SCRL_VR: {
-      if (record->event.pressed && !keyball_get_scroll_mode()) {
+      keyball_set_scroll_mode(record->event.pressed);
+
+      if (record->event.pressed) {
           horizontal_flag = 2;
-          keyball_set_scroll_mode(record->event.pressed);
+          state = CLICKING;
       } else {
           horizontal_flag = 0;
-          keyball_set_scroll_mode(record->event.pressed);
+          state = CLICKED;
       }
       return false;
     }
