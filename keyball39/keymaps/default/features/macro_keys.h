@@ -34,6 +34,7 @@ enum custom_keycodes {
   MC_TMCP,
   SCRL_HO,
   SCRL_VR,
+  SCRL_TB,
   ALT_TAB,
   AC_INS,
   AC_KEP,
@@ -122,6 +123,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           state = CLICKING;
       } else {
           horizontal_flag = 0;
+          state = CLICKED;
+      }
+      return false;
+    }
+
+    // vivaldiのタブサイクルをワンキーで
+    case SCRL_TB: {
+      keyball_set_scroll_mode(record->event.pressed);
+
+      if (record->event.pressed) {
+          keyball_set_cpi(4);
+          horizontal_flag = 1;
+          register_code(KC_MS_BTN2);
+          state = CLICKING;
+      } else {
+          keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+          horizontal_flag = 0;
+          unregister_code(KC_MS_BTN2);
           state = CLICKED;
       }
       return false;
