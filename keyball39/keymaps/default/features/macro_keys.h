@@ -35,6 +35,7 @@ enum custom_keycodes {
   SCRL_HO,
   SCRL_VR,
   SCRL_TB,
+  SCRL_WD,
   ALT_TAB,
   AC_INS,
   AC_KEP,
@@ -146,6 +147,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
     }
 
+    // windowsでトラボでタスクスイッチするやつ
+    case SCRL_WD: {
+      keyball_set_scroll_mode(record->event.pressed);
+
+      if (record->event.pressed) {
+          scroll_convert_flag = true;
+          horizontal_flag = 1;
+          keyball_set_cpi(2);
+          register_code(KC_LALT);
+          state = CLICKING;
+      } else {
+          scroll_convert_flag = false;
+          horizontal_flag = 0;
+          keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+          unregister_code(KC_LALT);
+          state = CLICKED;
+      }
+      return false;
+    }
     // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
     case KC_MS_BTN1:
     case KC_MS_BTN2:

@@ -43,6 +43,8 @@ int16_t mouse_move_count_ratio = 5;   // ポインターの動きを再生する
 
 bool keep_click_layer = false;  // レイヤーを保持する
 
+bool scroll_convert_flag = false;  // スクロールをキーコードに変更するフラグ
+
 // Modifierが絡むときの挙動が理想とは違ったので、一旦コメントアウト
 // const uint16_t ignore_disable_mouse_layer_keys[] = {KC_LANG1, KC_LANG2}; // この配列で指定されたキーはマウスレイヤー中に押下してもマウスレイヤーを解除しない
 
@@ -66,6 +68,17 @@ void disable_click_layer(void) {
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
   int16_t current_x = mouse_report.x;  // 現在のマウスのX座標
   int16_t current_y = mouse_report.y;  // 現在のマウスのY座標
+
+  int16_t current_v = mouse_report.v;  // 現在のマウスのY座標
+  if(scroll_convert_flag) {
+      if(current_v < 0) {
+          tap_code16(KC_TAB);
+      } else if (current_v > 0) {
+          tap_code16(S(KC_TAB));
+      }
+
+      return mouse_report;  // マウスレポートを返す
+  }
 
   // マウスが動いているかどうかチェック
   if (current_x != 0 || current_y != 0) {
