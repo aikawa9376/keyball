@@ -32,6 +32,7 @@ enum custom_keycodes {
   KC_TRPB,
   MC_TMUX,
   MC_TMCP,
+  MC_ESC,
   SCRL_HO,
   SCRL_VR,
   SCRL_TB,
@@ -43,6 +44,7 @@ enum custom_keycodes {
 
 extern uint16_t horizontal_flag;
 
+bool is_single_tap = true;
 bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
 uint16_t alt_tab_timer = 0;     // we will be using them soon.
 
@@ -166,6 +168,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     }
+
+    // 自動クリックレイヤーではESCは解除キーとして扱う
+    case MC_ESC: {
+      if (record->event.pressed) {
+          is_single_tap = true;
+          register_code(KC_LCTL);
+      } else {
+          unregister_code(KC_LCTL);
+          if(is_single_tap) {
+              if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                disable_click_layer();
+              } else {
+                tap_code16(KC_ESC);
+              }
+          }
+      }
+
+      return false;
+    }
+
     // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
     case KC_MS_BTN1:
     case KC_MS_BTN2:
@@ -202,6 +224,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     }
+  }
+
+  if (record->event.pressed) {
+    is_single_tap = false;
   }
 
   disable_click_layer();
