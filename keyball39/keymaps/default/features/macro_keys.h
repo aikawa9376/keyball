@@ -44,6 +44,7 @@ enum custom_keycodes {
 
 extern uint16_t horizontal_flag;
 
+bool hold_ctrl = false;
 bool is_single_tap = true;
 bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
 uint16_t alt_tab_timer = 0;     // we will be using them soon.
@@ -51,28 +52,15 @@ uint16_t alt_tab_timer = 0;     // we will be using them soon.
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  switch (keycode) {
-    case KC_DBLB:
-    case KC_TRPB: {
-      if (record->event.pressed) {
-        // キーダウン時
-        // `KC_DBLB`の場合
-        if (keycode == KC_DBLB) {
-          double_click_mouse_button1();  // マウスボタン1をダブルクリック
-        }
-        // `KC_TRPB`の場合
-        if (keycode == KC_TRPB) {
-          triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
-        }
-      } else {
-        if (click_layer && get_highest_layer(layer_state) == click_layer) {
-          // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-          enable_click_layer();
-          state = CLICKED;
-        }
-      }
-      return false;  // キーのデフォルトの動作をスキップする
+  if (record->event.pressed) {
+    is_single_tap = false;
+    // ctrlキー押下時に他キーが押されたらクリックレイヤーを解除
+    if (hold_ctrl) {
+        disable_click_layer();
     }
+  }
+
+  switch (keycode) {
     // Tmuxのプレフィックス
     case MC_TMUX: {
       if (record->event.pressed) {
@@ -173,13 +161,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MC_ESC: {
       if (record->event.pressed) {
           is_single_tap = true;
+          hold_ctrl = true;
           register_code(KC_LCTL);
       } else {
+          hold_ctrl = false;
           unregister_code(KC_LCTL);
           if(is_single_tap) {
               if (click_layer && get_highest_layer(layer_state) == click_layer) {
                 disable_click_layer();
               } else {
+                tap_code16(KC_ESC);
+                // 運用テスト
                 tap_code16(KC_ESC);
               }
           }
@@ -206,17 +198,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return true;
     }
-    case LCTL_T(KC_ESC): {
-      if (!record->event.pressed) {
-        disable_click_layer();
+    case KC_DBLB:
+    case KC_TRPB: {
+      if (click_layer && get_highest_layer(layer_state) == click_layer) {
+        if (record->event.pressed) {
+          // キーダウン時
+          // `KC_DBLB`の場合
+          if (keycode == KC_DBLB) {
+            double_click_mouse_button1();  // マウスボタン1をダブルクリック
+          }
+          // `KC_TRPB`の場合
+          if (keycode == KC_TRPB) {
+            triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
+          }
+        } else {
+          if (click_layer && get_highest_layer(layer_state) == click_layer) {
+            // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+            enable_click_layer();
+            state = CLICKED;
+          }
+        }
+        return false;  // キーのデフォルトの動作をスキップする
+      } else {
+        return true;
       }
-      return true;
-    }
-    case AC_INS: {
-      if (record->event.pressed) {
-        tap_code16(C(S(KC_C)));
-      }
-      return false;
     }
     case AC_KEP: {
       if (record->event.pressed) {
@@ -224,10 +229,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     }
-  }
-
-  if (record->event.pressed) {
-    is_single_tap = false;
   }
 
   disable_click_layer();
