@@ -55,8 +55,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     is_single_tap = false;
     // ctrlキー押下時に他キーが押されたらクリックレイヤーを解除
-    if (hold_ctrl) {
-        disable_click_layer();
+    if (hold_ctrl && click_layer && get_highest_layer(layer_state) == click_layer) {
+        disable_click_layer()  ;
     }
   }
 
