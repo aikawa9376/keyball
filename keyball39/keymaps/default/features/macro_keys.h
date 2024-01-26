@@ -28,218 +28,230 @@
  */
 
 enum custom_keycodes {
-  KC_DBLB = KEYBALL_SAFE_RANGE,
-  KC_TRPB,
-  MC_TMUX,
-  MC_TMCP,
-  MC_ESC,
-  SCRL_HO,
-  SCRL_VR,
-  SCRL_TB,
-  SCRL_WD,
-  ALT_TAB,
-  AC_INS,
-  AC_KEP,
+    KC_DBLB = KEYBALL_SAFE_RANGE,
+    KC_TRPB,
+    MC_TMUX,
+    MC_TMCP,
+    MC_ESC,
+    SCRL_HO,
+    SCRL_VR,
+    SCRL_TB,
+    SCRL_WD,
+    ALT_TAB,
+    AC_INS,
+    AC_KEP,
 };
 
 extern uint16_t horizontal_flag;
 
 bool hold_ctrl = false;
 bool is_single_tap = true;
+bool is_ime_on = false;
 bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
 uint16_t alt_tab_timer = 0;     // we will be using them soon.
 
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  if (record->event.pressed) {
-    is_single_tap = false;
-    // ctrlキー押下時に他キーが押されたらクリックレイヤーを解除
-    if (hold_ctrl && click_layer && get_highest_layer(layer_state) == click_layer) {
-        disable_click_layer()  ;
-    }
-  }
-
-  switch (keycode) {
-    // Tmuxのプレフィックス
-    case MC_TMUX: {
-      if (record->event.pressed) {
-        tap_code16(RALT(KC_SPACE));
-      }
-      return false;  // キーのデフォルトの動作をスキップする
-    }
-    // Tmuxのコピーモード
-    case MC_TMCP: {
-      if (record->event.pressed) {
-        tap_code16(RALT(KC_SPACE));
-        tap_code16(KC_SPACE);
-      }
-      return false;  // キーのデフォルトの動作をスキップする
-    }
-
-    // windows切り替え用
-    case ALT_TAB: {
-      if (record->event.pressed) {
-        if (!is_alt_tab_active) {
-          is_alt_tab_active = true;
-          register_code(KC_LALT);
+    if (record->event.pressed) {
+        is_single_tap = false;
+        // ctrlキー押下時に他キーが押されたらクリックレイヤーを解除
+        if (hold_ctrl && click_layer && get_highest_layer(layer_state) == click_layer) {
+            disable_click_layer();
+            hold_ctrl = false;
         }
-        alt_tab_timer = timer_read();
-        register_code(KC_TAB);
-      } else {
-        unregister_code(KC_TAB);
-      }
-      break;
     }
 
-    // 水平に固定してスクロール
-    case SCRL_HO: {
-      keyball_set_scroll_mode(record->event.pressed);
-
-      if (record->event.pressed) {
-          horizontal_flag = 1;
-          state = CLICKING;
-      } else {
-          horizontal_flag = 0;
-          state = CLICKED;
-      }
-      return false;
-    }
-    // 垂直に固定してスクロール
-    case SCRL_VR: {
-      keyball_set_scroll_mode(record->event.pressed);
-
-      if (record->event.pressed) {
-          horizontal_flag = 2;
-          state = CLICKING;
-      } else {
-          horizontal_flag = 0;
-          state = CLICKED;
-      }
-      return false;
-    }
-
-    // vivaldiのタブサイクルをワンキーで
-    case SCRL_TB: {
-      keyball_set_scroll_mode(record->event.pressed);
-
-      if (record->event.pressed) {
-          keyball_set_cpi(4);
-          horizontal_flag = 1;
-          register_code(KC_MS_BTN2);
-          state = CLICKING;
-      } else {
-          keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
-          horizontal_flag = 0;
-          unregister_code(KC_MS_BTN2);
-          state = CLICKED;
-      }
-      return false;
-    }
-
-    // windowsでトラボでタスクスイッチするやつ
-    case SCRL_WD: {
-      keyball_set_scroll_mode(record->event.pressed);
-
-      if (record->event.pressed) {
-          scroll_convert_flag = true;
-          horizontal_flag = 1;
-          keyball_set_cpi(2);
-          register_code(KC_LALT);
-          state = CLICKING;
-      } else {
-          scroll_convert_flag = false;
-          horizontal_flag = 0;
-          keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
-          unregister_code(KC_LALT);
-          state = CLICKED;
-      }
-      return false;
-    }
-
-    // 自動クリックレイヤーではESCは解除キーとして扱う
-    case MC_ESC: {
-      if (record->event.pressed) {
-          is_single_tap = true;
-          hold_ctrl = true;
-          register_code(KC_LCTL);
-      } else {
-          hold_ctrl = false;
-          unregister_code(KC_LCTL);
-          if(is_single_tap) {
-              if (click_layer && get_highest_layer(layer_state) == click_layer) {
-                disable_click_layer();
-              } else {
-                tap_code16(KC_ESC);
-                // 運用テスト
-                tap_code16(KC_ESC);
-              }
-          }
-      }
-
-      return false;
-    }
-
-    // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
-    case KC_MS_BTN1:
-    case KC_MS_BTN2:
-    case KC_MS_BTN3:
-    case KC_MS_BTN4:
-    case KC_MS_BTN5: {
-      if (click_layer && get_highest_layer(layer_state) == click_layer) {
-        if (record->event.pressed) {
-          // キーダウン時: 状態をCLICKINGに設定
-          state = CLICKING;
-        } else {
-          // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-          enable_click_layer();
-          state = CLICKED;
+    switch (keycode) {
+        // Tmuxのプレフィックス
+        case MC_TMUX: {
+            if (record->event.pressed) {
+                tap_code16(RALT(KC_SPACE));
+            }
+            return false;  // キーのデフォルトの動作をスキップする
         }
-      }
-      return true;
-    }
-    case KC_DBLB:
-    case KC_TRPB: {
-      if (click_layer && get_highest_layer(layer_state) == click_layer) {
-        if (record->event.pressed) {
-          // キーダウン時
-          // `KC_DBLB`の場合
-          if (keycode == KC_DBLB) {
-            double_click_mouse_button1();  // マウスボタン1をダブルクリック
-          }
-          // `KC_TRPB`の場合
-          if (keycode == KC_TRPB) {
-            triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
-          }
-        } else {
-          if (click_layer && get_highest_layer(layer_state) == click_layer) {
-            // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-            enable_click_layer();
-            state = CLICKED;
-          }
+        // Tmuxのコピーモード
+        case MC_TMCP: {
+            if (record->event.pressed) {
+                tap_code16(RALT(KC_SPACE));
+                tap_code16(KC_SPACE);
+            }
+            return false;  // キーのデフォルトの動作をスキップする
         }
-        return false;  // キーのデフォルトの動作をスキップする
-      } else {
-        return true;
-      }
-    }
-    case AC_KEP: {
-      if (record->event.pressed) {
-        keep_click_layer = true;
-      }
-      return false;
-    }
-  }
 
-  disable_click_layer();
-  return true;
+        // windows切り替え用
+        case ALT_TAB: {
+            if (record->event.pressed) {
+                if (!is_alt_tab_active) {
+                    is_alt_tab_active = true;
+                    register_code(KC_LALT);
+                }
+                alt_tab_timer = timer_read();
+                register_code(KC_TAB);
+            } else {
+                    unregister_code(KC_TAB);
+                }
+            break;
+        }
+
+        // 水平に固定してスクロール
+        case SCRL_HO: {
+            keyball_set_scroll_mode(record->event.pressed);
+
+            if (record->event.pressed) {
+                horizontal_flag = 1;
+                state = CLICKING;
+            } else {
+                    horizontal_flag = 0;
+                    state = CLICKED;
+                }
+            return false;
+        }
+        // 垂直に固定してスクロール
+        case SCRL_VR: {
+            keyball_set_scroll_mode(record->event.pressed);
+
+            if (record->event.pressed) {
+                horizontal_flag = 2;
+                state = CLICKING;
+            } else {
+                    horizontal_flag = 0;
+                    state = CLICKED;
+                }
+            return false;
+        }
+
+        // vivaldiのタブサイクルをワンキーで
+        case SCRL_TB: {
+            keyball_set_scroll_mode(record->event.pressed);
+
+            if (record->event.pressed) {
+                keyball_set_cpi(4);
+                horizontal_flag = 1;
+                register_code(KC_MS_BTN2);
+                state = CLICKING;
+            } else {
+                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+                    horizontal_flag = 0;
+                    unregister_code(KC_MS_BTN2);
+                    state = CLICKED;
+                }
+            return false;
+        }
+
+        // windowsでトラボでタスクスイッチするやつ
+        case SCRL_WD: {
+            keyball_set_scroll_mode(record->event.pressed);
+
+            if (record->event.pressed) {
+                scroll_convert_flag = true;
+                horizontal_flag = 1;
+                keyball_set_cpi(2);
+                register_code(KC_LALT);
+                state = CLICKING;
+            } else {
+                    scroll_convert_flag = false;
+                    horizontal_flag = 0;
+                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+                    unregister_code(KC_LALT);
+                    state = CLICKED;
+                }
+            return false;
+        }
+
+        // 自動クリックレイヤーではESCは解除キーとして扱う
+        case MC_ESC: {
+            if (record->event.pressed) {
+                is_single_tap = true;
+                hold_ctrl = true;
+                register_code(KC_LCTL);
+            } else {
+                hold_ctrl = false;
+                unregister_code(KC_LCTL);
+                if(is_single_tap) {
+                    if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                        disable_click_layer();
+                    } else {
+                        tap_code16(KC_ESC);
+                        if (!is_ime_on) {
+                            tap_code16(KC_ESC);
+                        }
+                        is_ime_on = false;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        case KC_RGUI: {
+            if (record->event.pressed) {
+                is_ime_on = true;
+            }
+
+            return true;
+        }
+
+        // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
+        case KC_MS_BTN1:
+        case KC_MS_BTN2:
+        case KC_MS_BTN3:
+        case KC_MS_BTN4:
+        case KC_MS_BTN5: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                if (record->event.pressed) {
+                    // キーダウン時: 状態をCLICKINGに設定
+                    state = CLICKING;
+                } else {
+                        // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+                        enable_click_layer();
+                        state = CLICKED;
+                    }
+            }
+            return true;
+        }
+        case KC_DBLB:
+        case KC_TRPB: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                if (record->event.pressed) {
+                    // キーダウン時
+                    // `KC_DBLB`の場合
+                    if (keycode == KC_DBLB) {
+                        double_click_mouse_button1();  // マウスボタン1をダブルクリック
+                    }
+                    // `KC_TRPB`の場合
+                    if (keycode == KC_TRPB) {
+                        triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
+                    }
+                } else {
+                        if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                            // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+                            enable_click_layer();
+                            state = CLICKED;
+                        }
+                    }
+                return false;  // キーのデフォルトの動作をスキップする
+            } else {
+                    return true;
+                }
+        }
+        case AC_KEP: {
+            if (record->event.pressed) {
+                keep_click_layer = true;
+            }
+            return false;
+        }
+    }
+
+    disable_click_layer();
+    return true;
 }
 
 void matrix_scan_user(void) { // The very important timer.
-  if (is_alt_tab_active) {
-    if (timer_elapsed(alt_tab_timer) > 1000) {
-      unregister_code(KC_LALT);
-      is_alt_tab_active = false;
+    if (is_alt_tab_active) {
+        if (timer_elapsed(alt_tab_timer) > 1000) {
+            unregister_code(KC_LALT);
+            is_alt_tab_active = false;
+        }
     }
-  }
 }
