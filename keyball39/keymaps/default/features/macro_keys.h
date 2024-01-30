@@ -203,18 +203,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     // キーダウン時: 状態をCLICKINGに設定
                     state = CLICKING;
                 } else {
-                        // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-                        enable_click_layer();
-                        state = CLICKED;
-                    }
+                    // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+                    enable_click_layer();
+                    state = CLICKED;
+                }
+                return true;
+            } else {
+                return false;
             }
-            return true;
         }
         case KC_DBLB:
         case KC_TRPB: {
             if (click_layer && get_highest_layer(layer_state) == click_layer) {
                 if (record->event.pressed) {
                     // キーダウン時
+                    state = CLICKING;
                     // `KC_DBLB`の場合
                     if (keycode == KC_DBLB) {
                         double_click_mouse_button1();  // マウスボタン1をダブルクリック
@@ -224,16 +227,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                         triple_click_mouse_button1();  // マウスボタン1をトリプルクリック
                     }
                 } else {
-                        if (click_layer && get_highest_layer(layer_state) == click_layer) {
-                            // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
-                            enable_click_layer();
-                            state = CLICKED;
-                        }
-                    }
+                    // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
+                    enable_click_layer();
+                    state = CLICKED;
+                }
                 return false;  // キーのデフォルトの動作をスキップする
             } else {
-                    return true;
-                }
+                return true;
+            }
         }
         case AC_KEP: {
             if (record->event.pressed) {
