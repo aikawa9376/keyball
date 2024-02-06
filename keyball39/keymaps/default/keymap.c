@@ -60,8 +60,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [4] = LAYOUT_universal(
         SCRL_MO  , SCRL_WD  , _______  , KC_TRPB  , SCRL_TB  ,                            _______  , _______  , AC_INS   , _______  , _______  ,
-        SCRL_HO  , _______  ,KC_MS_BTN2,KC_MS_BTN1, KC_DBLB  ,                            AC_KEP   ,KC_MS_BTN1,KC_MS_BTN2, _______  , SCRL_HO  ,
-        SCRL_VR  , _______  ,KC_MS_BTN4,KC_MS_BTN5, _______  ,                            _______  ,KC_MS_BTN4,KC_MS_BTN5, _______  , _______  ,
+        SCRL_HO  , _______  ,KC_OG_BTN2,KC_OG_BTN1, KC_DBLB  ,                            AC_KEP   ,KC_OG_BTN1,KC_OG_BTN2, _______  , SCRL_HO  ,
+        SCRL_VR  , _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  ,                            _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  , _______  ,
         _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
     )
 };

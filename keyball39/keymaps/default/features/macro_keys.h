@@ -40,6 +40,11 @@ enum custom_keycodes {
     ALT_TAB,
     AC_INS,
     AC_KEP,
+    KC_OG_BTN1,
+    KC_OG_BTN2,
+    KC_OG_BTN3,
+    KC_OG_BTN4,
+    KC_OG_BTN5
 };
 
 extern uint16_t horizontal_flag;
@@ -50,6 +55,46 @@ bool is_ime_on = false;
 bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
 uint16_t alt_tab_timer = 0;     // we will be using them soon.
 
+void mouse_button_func(uint16_t keycode, bool regist_flag) {
+    switch(keycode) {
+        case KC_OG_BTN1: {
+            regist_flag ? register_code(KC_MS_BTN1) : unregister_code(KC_MS_BTN1);
+            break;
+        }
+        case KC_OG_BTN2: {
+            regist_flag ? register_code(KC_MS_BTN2) : unregister_code(KC_MS_BTN2);
+            break;
+        }
+        case KC_OG_BTN3: {
+            regist_flag ? register_code(KC_MS_BTN3) : unregister_code(KC_MS_BTN3);
+            break;
+        }
+        case KC_OG_BTN4: {
+            regist_flag ? register_code(KC_MS_BTN4) : unregister_code(KC_MS_BTN4);
+            break;
+        }
+        case KC_OG_BTN5: {
+            regist_flag ? register_code(KC_MS_BTN5) : unregister_code(KC_MS_BTN5);
+            break;
+        }
+    }
+}
+
+void disable_click_layer_all_state(void) {
+    state = NONE;
+    horizontal_flag = 0;
+    disable_click_layer();
+    keyball_set_scroll_mode(false);
+    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+    unregister_code(KC_MS_BTN2);
+    unregister_code(KC_RALT);
+    unregister_code(KC_MS_BTN1);
+    unregister_code(KC_MS_BTN2);
+    unregister_code(KC_MS_BTN3);
+    unregister_code(KC_MS_BTN4);
+    unregister_code(KC_MS_BTN5);
+}
+
 // マクロキーの処理を行う関数
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
@@ -57,7 +102,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         is_single_tap = false;
         // ctrlキー押下時に他キーが押されたらクリックレイヤーを解除
         if (hold_ctrl && click_layer && get_highest_layer(layer_state) == click_layer) {
-            disable_click_layer();
+            disable_click_layer_all_state();
             hold_ctrl = false;
         }
     }
@@ -89,74 +134,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 alt_tab_timer = timer_read();
                 register_code(KC_TAB);
             } else {
-                    unregister_code(KC_TAB);
-                }
+                unregister_code(KC_TAB);
+            }
             break;
-        }
-
-        // 水平に固定してスクロール
-        case SCRL_HO: {
-            keyball_set_scroll_mode(record->event.pressed);
-
-            if (record->event.pressed) {
-                horizontal_flag = 1;
-                state = CLICKING;
-            } else {
-                    horizontal_flag = 0;
-                    state = CLICKED;
-                }
-            return false;
-        }
-        // 垂直に固定してスクロール
-        case SCRL_VR: {
-            keyball_set_scroll_mode(record->event.pressed);
-
-            if (record->event.pressed) {
-                horizontal_flag = 2;
-                state = CLICKING;
-            } else {
-                    horizontal_flag = 0;
-                    state = CLICKED;
-                }
-            return false;
-        }
-
-        // vivaldiのタブサイクルをワンキーで
-        case SCRL_TB: {
-            keyball_set_scroll_mode(record->event.pressed);
-
-            if (record->event.pressed) {
-                keyball_set_cpi(4);
-                horizontal_flag = 1;
-                register_code(KC_MS_BTN2);
-                state = CLICKING;
-            } else {
-                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
-                    horizontal_flag = 0;
-                    unregister_code(KC_MS_BTN2);
-                    state = CLICKED;
-                }
-            return false;
-        }
-
-        // windowsでトラボでタスクスイッチするやつ
-        case SCRL_WD: {
-            keyball_set_scroll_mode(record->event.pressed);
-
-            if (record->event.pressed) {
-                scroll_convert_flag = true;
-                horizontal_flag = 1;
-                keyball_set_cpi(2);
-                register_code(KC_LALT);
-                state = CLICKING;
-            } else {
-                    scroll_convert_flag = false;
-                    horizontal_flag = 0;
-                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
-                    unregister_code(KC_LALT);
-                    state = CLICKED;
-                }
-            return false;
         }
 
         // 自動クリックレイヤーではESCは解除キーとして扱う
@@ -170,7 +150,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_LCTL);
                 if(is_single_tap) {
                     if (click_layer && get_highest_layer(layer_state) == click_layer) {
-                        disable_click_layer();
+                        disable_click_layer_all_state();
                     } else {
                         tap_code16(KC_ESC);
                         if (!is_ime_on) {
@@ -192,26 +172,96 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return true;
         }
 
-        // デフォルトのマウスキーを自動クリックレイヤーで使用可能にする
-        case KC_MS_BTN1:
-        case KC_MS_BTN2:
-        case KC_MS_BTN3:
-        case KC_MS_BTN4:
-        case KC_MS_BTN5: {
+        // 水平に固定してスクロール
+        case SCRL_HO: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                keyball_set_scroll_mode(record->event.pressed);
+                if (record->event.pressed) {
+                    horizontal_flag = 1;
+                    state = CLICKING;
+                } else {
+                    horizontal_flag = 0;
+                    state = CLICKED;
+                }
+                return false;
+            }
+        }
+        // 垂直に固定してスクロール
+        case SCRL_VR: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                keyball_set_scroll_mode(record->event.pressed);
+                if (record->event.pressed) {
+                    horizontal_flag = 2;
+                    state = CLICKING;
+                } else {
+                    horizontal_flag = 0;
+                    state = CLICKED;
+                }
+                return false;
+            }
+        }
+
+        // vivaldiのタブサイクルをワンキーで
+        case SCRL_TB: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                keyball_set_scroll_mode(record->event.pressed);
+                if (record->event.pressed) {
+                    keyball_set_cpi(4);
+                    horizontal_flag = 1;
+                    register_code(KC_MS_BTN2);
+                    state = CLICKING;
+                } else {
+                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+                    horizontal_flag = 0;
+                    unregister_code(KC_MS_BTN2);
+                    state = CLICKED;
+                }
+                return false;
+            }
+        }
+
+        // windowsでトラボでタスクスイッチするやつ
+        case SCRL_WD: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                keyball_set_scroll_mode(record->event.pressed);
+                if (record->event.pressed) {
+                    scroll_convert_flag = true;
+                    horizontal_flag = 1;
+                    keyball_set_cpi(2);
+                    register_code(KC_RALT);
+                    state = CLICKING;
+                } else {
+                    scroll_convert_flag = false;
+                    horizontal_flag = 0;
+                    keyball_set_cpi(KEYBALL_CPI_DEFAULT / 100);
+                    unregister_code(KC_RALT);
+                    state = CLICKED;
+                }
+                return false;
+            }
+        }
+
+        case KC_OG_BTN1:
+        case KC_OG_BTN2:
+        case KC_OG_BTN3:
+        case KC_OG_BTN4:
+        case KC_OG_BTN5: {
             if (click_layer && get_highest_layer(layer_state) == click_layer) {
                 if (record->event.pressed) {
                     // キーダウン時: 状態をCLICKINGに設定
                     state = CLICKING;
+                    mouse_button_func(keycode, true);
                 } else {
                     // キーアップ時: クリックレイヤーを有効にして、状態をCLICKEDに設定
                     enable_click_layer();
                     state = CLICKED;
+                    mouse_button_func(keycode, false);
                 }
-                return true;
-            } else {
                 return false;
             }
+            return true;
         }
+
         case KC_DBLB:
         case KC_TRPB: {
             if (click_layer && get_highest_layer(layer_state) == click_layer) {
@@ -237,14 +287,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         case AC_KEP: {
-            if (record->event.pressed) {
-                keep_click_layer = true;
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                if (record->event.pressed) {
+                    keep_click_layer = true;
+                }
+                return false;
             }
-            return false;
         }
     }
 
-    disable_click_layer();
+    disable_click_layer_all_state();
     return true;
 }
 
