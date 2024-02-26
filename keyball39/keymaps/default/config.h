@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NO_ACTION_ONESHOT  // 392バイト
 
 #define TAP_CODE_DELAY 5
-#define DYNAMIC_KEYMAP_LAYER_COUNT 5
+#define DYNAMIC_KEYMAP_LAYER_COUNT 6
 
 #define COMBO_COUNT 3
 
@@ -39,3 +39,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PERMISSIVE_HOLD_PER_KEY
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
 #define QUICK_TAP_TERM_PER_KEY
+
+// #define NAGINATA_TATEGAKI
+#define NAGINATA_YOKOGAKI
+
+// #define NAGINATA_EDIT_WIN // JP106
+// #define UNICODE_SELECTED_MODES UC_WINC
+
+// #define NAGINATA_EDIT_MAC // US101
+// Macはunicode入力を使わない
+// #define MAC_LIVE_CONVERSION // Macでライブ変換をオンにしている場合
+
+// #define NAGINATA_EDIT_LINUX
+// #define UNICODE_SELECTED_MODES UC_LNX
+
+// #define NAGINATA_KOUCHI_SHIFT // シフトを後置でも有効にする

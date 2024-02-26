@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum.h"
 
+#include "features/naginata.h"
 #include "utils/functions.h"
 #include "features/auto_click_layer.h"
 #include "features/one_tap_multi_click.h"
@@ -34,7 +35,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q       , KC_W     , KC_E     , KC_R     , KC_T     ,                            KC_Y     , KC_U     , KC_I     , KC_O     , KC_P     ,
         LT(1, KC_A), KC_S     , KC_D     , KC_F     , KC_G     ,                            KC_H     , KC_J     , KC_K     , KC_L     , LT(1, KC_SCLN),
         SFT_T(KC_Z), KC_X     , KC_C     , KC_V     , KC_B     ,                            KC_N     , KC_M     , KC_COMM  , KC_DOT   , SFT_T(KC_SLSH),
-        KC_LGUI    , KC_LALT  , MO(3)    , MC_ESC   , KC_LALT ,KC_BSPC,     KC_ENT, LT(2, KC_SPC),_______   ,_______   ,_______   , KC_RSFT
+        KC_LGUI    , KC_LALT  , MO(5)    , MC_ESC   , KC_LALT ,KC_BSPC,     KC_ENT, LT(2, KC_SPC),_______   ,_______   ,_______   , KC_RSFT
     ),
 
     [1] = LAYOUT_universal(
@@ -63,6 +64,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         SCRL_HO  , _______  ,KC_OG_BTN2,KC_OG_BTN1, KC_DBLB  ,                            AC_KEP   ,KC_OG_BTN1,KC_OG_BTN2, _______  , SCRL_HO  ,
         SCRL_VR  , _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  ,                            _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  , _______  ,
         _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
+    ),
+
+    [5] = LAYOUT_universal(
+        NG_Q   ,NG_W   ,NG_E   ,NG_R   ,NG_T   ,                NG_Y   ,NG_U   ,NG_I   ,NG_O   ,NG_P   ,
+        NG_A   ,NG_S   ,NG_D   ,NG_F   ,NG_G   ,                NG_H   ,NG_J   ,NG_K   ,NG_L   ,NG_SCLN,
+        NG_Z   ,NG_X   ,NG_C   ,NG_V   ,NG_B   ,                NG_N   ,NG_M   ,NG_COMM,NG_DOT ,NG_SLSH,
+        _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______ , _______
     )
 };
 // clang-format on
@@ -75,6 +83,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         keep_click_layer = false;
     }
     return state;
+}
+
+void matrix_init_user(void) {
+  // 薙刀式
+  uint16_t ngonkeys[] = {KC_H, KC_J};
+  uint16_t ngoffkeys[] = {KC_F, KC_G};
+  set_naginata(5, ngonkeys, ngoffkeys);
+  // 薙刀式
 }
 
 #ifdef OLED_ENABLE

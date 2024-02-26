@@ -1,6 +1,6 @@
 RGBLIGHT_ENABLE = false
 
-OLED_ENABLE = yes
+OLED_ENABLE = false
 COMBO_ENABLE = yes
 CAPS_WORD_ENABLE = yes
 EXTRAFLAGS += -flto

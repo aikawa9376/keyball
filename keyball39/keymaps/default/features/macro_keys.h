@@ -296,6 +296,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
     }
 
+    if (!process_naginata(keycode, record)) return false;
+
     disable_click_layer_all_state();
     return true;
 }
