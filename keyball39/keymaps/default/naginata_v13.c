@@ -47,7 +47,7 @@
 
 static uint8_t ng_chrcount = 0; // 文字キー入力のカウンタ
 static bool is_naginata = false; // 薙刀式がオンかオフか
-static uint8_t naginata_layer = 0; // NG_*を配置しているレイヤー番号
+static uint8_t naginata_layer = 5; // NG_*を配置しているレイヤー番号
 static uint32_t keycomb = 0UL; // 同時押しの状態を示す。32bitの各ビットがキーに対応する。
 static uint16_t ngon_keys[2]; // 薙刀式をオンにするキー(通常HJ)
 static uint16_t ngoff_keys[2]; // 薙刀式をオフにするキー(通常FG)

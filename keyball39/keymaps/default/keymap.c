@@ -85,14 +85,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return state;
 }
 
-void matrix_init_user(void) {
-  // 薙刀式
-  uint16_t ngonkeys[] = {KC_H, KC_J};
-  uint16_t ngoffkeys[] = {KC_F, KC_G};
-  set_naginata(5, ngonkeys, ngoffkeys);
-  // 薙刀式
-}
-
 #ifdef OLED_ENABLE
 
 #include "lib/oledkit/oledkit.h"

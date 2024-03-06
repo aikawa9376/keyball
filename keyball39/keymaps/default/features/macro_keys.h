@@ -28,7 +28,7 @@
  */
 
 enum custom_keycodes {
-    KC_DBLB = KEYBALL_SAFE_RANGE,
+    KC_DBLB = NG_SAFE_RANGE,
     KC_TRPB,
     MC_TMUX,
     MC_TMCP,
@@ -154,6 +154,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     } else {
                         tap_code16(KC_ESC);
                         if (!is_ime_on) {
+                            naginata_off();
                             tap_code16(KC_ESC);
                         }
                         is_ime_on = false;
@@ -167,6 +168,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_RGUI: {
             if (record->event.pressed) {
                 is_ime_on = true;
+                naginata_on();
             }
 
             return true;
