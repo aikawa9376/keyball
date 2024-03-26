@@ -294,6 +294,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
         }
+        case AC_INS: {
+            if (click_layer && get_highest_layer(layer_state) == click_layer) {
+                if (record->event.pressed) {
+                    tap_code16(LCTL(S(KC_C)));
+                }
+                return false;
+            }
+        }
     }
 
     disable_click_layer_all_state();

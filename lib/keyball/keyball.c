@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "quantum.h"
+#include QMK_KEYBOARD_H
+
 #ifdef SPLIT_KEYBOARD
 #    include "transactions.h"
 #endif
 
-#include "keyball.h"
 #include "drivers/pmw3360/pmw3360.h"
 
 const uint8_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT / 100;

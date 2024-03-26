@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 
-#include "quantum.h"
-
 #include "utils/functions.h"
 #include "features/auto_click_layer.h"
 #include "features/one_tap_multi_click.h"

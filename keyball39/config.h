@@ -21,17 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Key matrix parameters
 #define MATRIX_ROWS         (4 * 2)  // split keyboard
 #define MATRIX_COLS         6
-#define MATRIX_ROW_PINS     { F4, F5, F6, F7 }
-#define MATRIX_COL_PINS     { D4, C6, D7, E6, B4, B5 }
 #define MATRIX_MASKED
 #define DEBOUNCE            5
 #define DIODE_DIRECTION     COL2ROW
 
 // Split parameters
-#define SOFT_SERIAL_PIN         D2
-#define SPLIT_HAND_MATRIX_GRID  B5, F6
+#define SPLIT_HAND_MATRIX_GRID  F6, B5
 #define SPLIT_USB_DETECT
-#define SPLIT_USB_TIMEOUT       2500
+#define SPLIT_USB_TIMEOUT       3000
+#define SPLIT_HAND_MATRIX_GRID_LOW_IS_LEFT
 
 #define SPLIT_TRANSACTION_IDS_KB KEYBALL_GET_INFO, KEYBALL_GET_MOTION, KEYBALL_SET_CPI
 
