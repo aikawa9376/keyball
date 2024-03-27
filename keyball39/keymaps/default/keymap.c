@@ -86,10 +86,13 @@ void oledkit_render_info_user(void) {
 
   keyball_oled_render_keyinfo();   // キー情報を表示
   keyball_oled_render_ballinfo();  // トラックボール情報を表示
+  // keyball_oled_render_layerinfo();  // トラックボール情報を表示
 
   // <Layer>を表示する
-  oled_write_P(PSTR("Layer:"), false);
-  oled_write(get_u8_str(get_highest_layer(layer_state), ' '), false);
+  oled_write_P(PSTR("L\xB6\xB7r\xB1"), false);
+  for (uint8_t i = 1; i < DYNAMIC_KEYMAP_LAYER_COUNT; i++) {
+      oled_write_char(keyball_get_oled_layer_char(i), false);
+  }
 
   // <マウス移動量 / クリックレイヤーしきい値>を表示
   // oled_write_P(PSTR(" MV:"), false);

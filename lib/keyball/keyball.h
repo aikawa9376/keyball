@@ -67,6 +67,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    define KEYBALL_MODEL 44
 #endif
 
+#define KEYBALL_OLED_MAX_PRESSING_KEYCODES 6
+
 //////////////////////////////////////////////////////////////////////////////
 // Types
 
@@ -130,6 +132,9 @@ typedef struct {
     uint16_t       last_kc;
     keypos_t       last_pos;
     report_mouse_t last_mouse;
+
+    // Buffer to indicate pressing keys.
+    char pressing_keys[KEYBALL_OLED_MAX_PRESSING_KEYCODES + 1];
 } keyball_t;
 
 typedef enum {
@@ -164,6 +169,9 @@ bool keyball_get_scroll_mode(void);
 
 /// keyball_set_scroll_mode modify scroll mode.
 void keyball_set_scroll_mode(bool mode);
+
+/// keyball_set_scroll_mode modify scroll mode.
+char keyball_get_oled_layer_char(uint8_t layer);
 
 // TODO: document
 uint8_t keyball_get_scroll_div(void);

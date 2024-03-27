@@ -1,6 +1,4 @@
 /*
-Copyright 2022 MURAOKA Taro (aka KoRoN, @kaoriya)
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
@@ -27,6 +25,10 @@ const uint8_t CPI_DEFAULT    = KEYBALL_CPI_DEFAULT / 100;
 const uint8_t CPI_MAX        = pmw3360_MAXCPI + 1;
 const uint8_t SCROLL_DIV_MAX = 7;
 
+static const char BL = '\xB0'; // Blank indicator character
+static const char LFSTR_ON[] PROGMEM = "\xB2\xB3";
+static const char LFSTR_OFF[] PROGMEM = "\xB4\xB5";
+
 uint16_t horizontal_flag = 0;
 
 keyball_t keyball = {
@@ -42,6 +44,8 @@ keyball_t keyball = {
 
     .scroll_mode = false,
     .scroll_div  = 0,
+
+    .pressing_keys = { BL, BL, BL, BL, BL, BL, 0 },
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -384,58 +388,75 @@ const char PROGMEM code_to_name[] = {
 void keyball_oled_render_ballinfo(void) {
 #ifdef OLED_ENABLE
     // Format: `Ball:{mouse x}{mouse y}{mouse h}{mouse v}`
-    //         `    CPI{CPI} S{SCROLL_MODE} D{SCROLL_DIV}`
     //
     // Output example:
     //
     //     Ball: -12  34   0   0
-    //
-    oled_write_P(PSTR("Ball:"), false);
+
+    // 1st line, "Ball" label, mouse x, y, h, and v.
+    oled_write_P(PSTR("Ball\xB1"), false);
     oled_write(format_4d(keyball.last_mouse.x), false);
     oled_write(format_4d(keyball.last_mouse.y), false);
     oled_write(format_4d(keyball.last_mouse.h), false);
     oled_write(format_4d(keyball.last_mouse.v), false);
-    // CPI
-    oled_write_P(PSTR("     CPI"), false);
+
+    // 2nd line, empty label and CPI
+    oled_write_P(PSTR("    \xB1\xBC\xBD"), false);
     oled_write(format_4d(keyball_get_cpi()) + 1, false);
-    oled_write_P(PSTR("00  S"), false);
-    oled_write_char(keyball.scroll_mode ? '1' : '0', false);
-    oled_write_P(PSTR("  D"), false);
+    oled_write_P(PSTR("00 "), false);
+
+    // indicate scroll mode: on/off
+    oled_write_P(PSTR("\xBE\xBF"), false);
+    if (keyball.scroll_mode) {
+        oled_write_P(LFSTR_ON, false);
+    } else {
+        oled_write_P(LFSTR_OFF, false);
+    }
+
+    // indicate scroll divider:
+    oled_write_P(PSTR(" \xC0\xC1"), false);
     oled_write_char('0' + keyball_get_scroll_div(), false);
+#endif
+}
+
+void keyball_oled_render_ballsubinfo(void) {
+#ifdef OLED_ENABLE
 #endif
 }
 
 void keyball_oled_render_keyinfo(void) {
 #ifdef OLED_ENABLE
-    // Format: `Key :  R{row}  C{col} K{kc}  '{name}`
+    // Format: `Key :  R{row}  C{col} K{kc} {name}{name}{name}`
     //
     // Where `kc` is lower 8 bit of keycode.
-    // Where `name` is readable label for `kc`, valid between 4 and 56.
+    // Where `name`s are readable labels for pressing keys, valid between 4 and 56.
+    //
+    // `row`, `col`, and `kc` indicates the last processed key,
+    // but `name`s indicate unreleased keys in best effort.
     //
     // It is aligned to fit with output of keyball_oled_render_ballinfo().
     // For example:
     //
-    //     Key :  R2  C3 K06  'c
+    //     Key :  R2  C3 K06 abc
     //     Ball:   0   0   0   0
-    //
-    uint8_t keycode = keyball.last_kc;
 
-    oled_write_P(PSTR("Key :  R"), false);
+    // "Key" Label
+    oled_write_P(PSTR("Key \xB1"), false);
+
+    // Row and column
+    oled_write_char('\xB8', false);
     oled_write_char(to_1x(keyball.last_pos.row), false);
-    oled_write_P(PSTR("  C"), false);
+    oled_write_char('\xB9', false);
     oled_write_char(to_1x(keyball.last_pos.col), false);
-    if (keycode) {
-        oled_write_P(PSTR(" K"), false);
-        oled_write_char(to_1x(keycode >> 4), false);
-        oled_write_char(to_1x(keycode), false);
-    }
-    if (keycode >= 4 && keycode < 57) {
-        oled_write_P(PSTR("  '"), false);
-        char name = pgm_read_byte(code_to_name + keycode - 4);
-        oled_write_char(name, false);
-    } else {
-        oled_advance_page(true);
-    }
+
+    // Keycode
+    oled_write_P(PSTR("\xBA\xBB"), false);
+    oled_write_char(to_1x(keyball.last_kc >> 4), false);
+    oled_write_char(to_1x(keyball.last_kc), false);
+
+    // Pressing keys
+    oled_write_P(PSTR("  "), false);
+    oled_write(keyball.pressing_keys, false);
 #endif
 }
 
@@ -447,11 +468,35 @@ void keyball_oled_render_layerinfo(void) {
     //
     //     Layer:-23------------
     //
-    oled_write_P(PSTR("Layer:"), false);
-    for (uint8_t i = 1; i < 16; i++) {
-        oled_write_char((layer_state_is(i) ? to_1x(i) : '_'), false);
+    oled_write_P(PSTR("L\xB6\xB7r\xB1"), false);
+    for (uint8_t i = 1; i < 8; i++) {
+        oled_write_char((layer_state_is(i) ? to_1x(i) : BL), false);
     }
+    oled_write_char(' ', false);
+
+#    ifdef POINTING_DEVICE_AUTO_MOUSE_ENABLE
+    oled_write_P(PSTR("\xC2\xC3"), false);
+    if (get_auto_mouse_enable()) {
+        oled_write_P(LFSTR_ON, false);
+    } else {
+        oled_write_P(LFSTR_OFF, false);
+    }
+
+    oled_write(format_4d(get_auto_mouse_timeout() / 10) + 1, false);
+    oled_write_char('0', false);
+#    else
+    oled_write_P(PSTR("\xC2\xC3\xB4\xB5 ---"), false);
+#    endif
 #endif
+}
+
+char keyball_get_oled_layer_char(uint8_t layer) {
+    // layer が有効なレイヤーであることを確認する
+    if (layer < DYNAMIC_KEYMAP_LAYER_COUNT) {
+        return layer_state_is(layer) ? to_1x(layer) : BL;
+    } else {
+        return BL; // 無効なレイヤーまたはエラー文字
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
