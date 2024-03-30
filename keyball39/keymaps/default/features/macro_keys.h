@@ -70,11 +70,31 @@ void mouse_button_func(uint16_t keycode, bool regist_flag) {
             break;
         }
         case KC_OG_BTN4: {
-            regist_flag ? register_code(KC_MS_BTN4) : unregister_code(KC_MS_BTN4);
+            keyball_set_scroll_mode(false);
+
+            if(horizontal_flag == 1) {
+                if(regist_flag) {
+                    tap_code16(C(KC_C));
+                } else {
+                    horizontal_flag = 0;
+                }
+            } else {
+                regist_flag ? register_code(KC_MS_BTN4) : unregister_code(KC_MS_BTN4);
+            }
             break;
         }
         case KC_OG_BTN5: {
-            regist_flag ? register_code(KC_MS_BTN5) : unregister_code(KC_MS_BTN5);
+            keyball_set_scroll_mode(false);
+
+            if(horizontal_flag == 1) {
+                if(regist_flag) {
+                    tap_code16(C(KC_V));
+                } else {
+                    horizontal_flag = 0;
+                }
+            } else {
+                regist_flag ? register_code(KC_MS_BTN5) : unregister_code(KC_MS_BTN5);
+            }
             break;
         }
     }
@@ -167,6 +187,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_RGUI: {
             if (record->event.pressed) {
                 is_ime_on = true;
+                disable_click_layer();
             }
 
             return true;
