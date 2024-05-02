@@ -17,6 +17,8 @@ enum combos {
     CM_LC,
     CM_RC,
     CM_TG,
+    CM_AP,
+    CM_AQ,
 };
 
 const uint16_t PROGMEM space_combo[] = {KC_J, KC_K, COMBO_END};
@@ -30,6 +32,8 @@ const uint16_t PROGMEM imeonm_combo[] = {KC_OG_BTN4, KC_OG_BTN5, COMBO_END};
 
 // test
 const uint16_t PROGMEM stogg_combo[] = {SFT_T(KC_Z), SFT_T(KC_SLSH), COMBO_END};
+const uint16_t PROGMEM altsp_combo[] = {KC_K, KC_L, COMBO_END};
+const uint16_t PROGMEM altsq_combo[] = {KC_D, KC_S, COMBO_END};
 
 combo_t key_combos[] = {
     [CM_JK] = COMBO(space_combo, KC_SPACE),
@@ -40,4 +44,6 @@ combo_t key_combos[] = {
     [CM_TG] = COMBO(stogg_combo, CW_TOGG),
     [CM_MV] = COMBO(imeonm_combo, KC_RGUI),
     [CM_MS] = COMBO(spacem_combo, KC_SPACE),
+    [CM_AP] = COMBO(altsp_combo, KC_P),
+    [CM_AQ] = COMBO(altsq_combo, KC_Q),
 };
