@@ -71,6 +71,7 @@ void mouse_button_func(uint16_t keycode, bool regist_flag) {
         }
         case KC_OG_BTN4: {
             keyball_set_scroll_mode(false);
+            is_single_tap = true;
 
             if(horizontal_flag == 1) {
                 if(regist_flag) {
@@ -79,12 +80,21 @@ void mouse_button_func(uint16_t keycode, bool regist_flag) {
                     horizontal_flag = 0;
                 }
             } else {
-                regist_flag ? register_code(KC_MS_BTN4) : unregister_code(KC_MS_BTN4);
+                // regist_flag ? register_code(KC_MS_BTN4) : unregister_code(KC_MS_BTN4);
+                if(regist_flag) {
+                    hold_ctrl = true;
+                    register_code(KC_RCTL);
+                } else if (is_single_tap) {
+                    hold_ctrl = false;
+                    unregister_code(KC_RCTL);
+                    tap_code16(KC_MS_BTN4);
+                }
             }
             break;
         }
         case KC_OG_BTN5: {
             keyball_set_scroll_mode(false);
+            is_single_tap = true;
 
             if(horizontal_flag == 1) {
                 if(regist_flag) {
@@ -93,7 +103,15 @@ void mouse_button_func(uint16_t keycode, bool regist_flag) {
                     horizontal_flag = 0;
                 }
             } else {
-                regist_flag ? register_code(KC_MS_BTN5) : unregister_code(KC_MS_BTN5);
+                // regist_flag ? register_code(KC_MS_BTN5) : unregister_code(KC_MS_BTN5);
+                if(regist_flag) {
+                    hold_ctrl = true;
+                    register_code(KC_LCTL);
+                } else if (is_single_tap) {
+                    hold_ctrl = false;
+                    unregister_code(KC_LCTL);
+                    tap_code16(KC_MS_BTN5);
+                }
             }
             break;
         }
@@ -279,6 +297,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     mouse_button_func(keycode, false);
                 }
                 return false;
+            } else {
+                if (!record->event.pressed) {
+                    unregister_code(keycode);
+
+                    if(keycode == KC_OG_BTN5) {
+                        unregister_code(KC_LCTL);
+                    }
+                    if(keycode == KC_OG_BTN4) {
+                        unregister_code(KC_RCTL);
+                    }
+                }
             }
             return true;
         }

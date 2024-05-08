@@ -19,11 +19,13 @@ enum combos {
     CM_TG,
     CM_AP,
     CM_AQ,
+    CM_ES,
 };
 
 const uint16_t PROGMEM space_combo[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM enter_combo[] = {KC_D, KC_F, COMBO_END};
-const uint16_t PROGMEM imeon_combo[] = {KC_C, KC_V, COMBO_END};
+const uint16_t PROGMEM imeon_combo[] = {KC_C, LCTL_T(KC_V), COMBO_END};
+const uint16_t PROGMEM escape_combo[] = {KC_F, KC_J, COMBO_END};
 // const uint16_t PROGMEM rctrl_combo[] = {KC_J, KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM rctrl_combo[] = {KC_J, KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM lctrl_combo[] = {KC_S, KC_D, KC_F, COMBO_END};
@@ -46,4 +48,5 @@ combo_t key_combos[] = {
     [CM_MS] = COMBO(spacem_combo, KC_SPACE),
     [CM_AP] = COMBO(altsp_combo, KC_P),
     [CM_AQ] = COMBO(altsq_combo, KC_Q),
+    [CM_ES] = COMBO(escape_combo, MC_ESC),
 };
