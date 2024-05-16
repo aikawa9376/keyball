@@ -30,7 +30,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // keymap for default
     [0] = LAYOUT_universal(
         KC_Q       , KC_W     , KC_E     , KC_R        , KC_T     ,                    KC_Y         , KC_U        , KC_I     , KC_O     , KC_P     ,
-        LT(1, KC_A), KC_S     , KC_D     , KC_F        , KC_G     ,                    KC_H         , KC_J        , KC_K     , KC_L     , LT(1, KC_SCLN),
+        LT(1, KC_A), KC_S     , KC_D     , LT(5, KC_F) , KC_G     ,                    KC_H         , KC_J        , KC_K     , KC_L     , LT(1, KC_SCLN),
         SFT_T(KC_Z), KC_X     , KC_C     , LCTL_T(KC_V), KC_B     ,                    KC_N         , RCTL_T(KC_M), KC_COMM  , KC_DOT   , SFT_T(KC_SLSH),
         KC_LGUI    , KC_LALT  , MO(3)    , MC_ESC      , KC_LALT ,KC_BSPC,     KC_ENT, LT(2, KC_SPC),_______   ,_______   ,_______   , KC_RSFT
     ),
@@ -58,10 +58,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [4] = LAYOUT_universal(
         SCRL_MO  , SCRL_WD  , _______  , KC_TRPB  , SCRL_TB  ,                            _______  , _______  , AC_INS   , _______  , _______  ,
-        SCRL_HO  , _______  ,KC_OG_BTN2,KC_OG_BTN1, KC_DBLB  ,                            AC_KEP   ,KC_OG_BTN1,KC_OG_BTN2, _______  , SCRL_HO  ,
+        SCRL_HO  , _______  ,_______   ,_______   , KC_DBLB  ,                            AC_KEP   ,KC_OG_BTN1,KC_OG_BTN2, _______  , SCRL_HO  ,
         SCRL_VR  , _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  ,                            _______  ,KC_OG_BTN4,KC_OG_BTN5, _______  , _______  ,
-        _______  , _______  , _______  , _______  , AC_KEP   , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
-    )
+        _______  , _______  , _______  , _______  , _______  , _______  ,      _______  , _______  , _______  , _______  , _______  , _______
+    ),
+
+    [5] = LAYOUT_universal(
+        _______  , _______ , _______  , _______  , _______  ,                            _______  , MC_TAB   , MC_STAB  , _______  , _______  ,
+        _______  , _______ , _______  , _______  , _______  ,                            C(KC_F4) , MC_ESC   , _______  , _______  , _______  ,
+        _______  , _______ , _______  , _______  , _______  ,                            _______  , MC_J     , MC_K     , _______  , _______  ,
+        _______  , _______ , _______  , _______  , _______  , _______  ,      _______ ,  _______  , _______  , _______  , _______  , _______
+    ),
 };
 // clang-format on
 
@@ -103,19 +110,19 @@ void oledkit_render_info_user(void) {
   // <state>を表示
   switch (state) {
     case WAITING:
-      oled_write_ln_P(PSTR("  WAITING"), false);
+      oled_write_ln_P(PSTR(" WAITING"), false);
       break;
     case CLICKABLE:
-      oled_write_ln_P(PSTR("  CLICKABLE"), false);
+      oled_write_ln_P(PSTR(" CLICKABLE"), false);
       break;
     case CLICKING:
-      oled_write_ln_P(PSTR("  CLICKING"), false);
+      oled_write_ln_P(PSTR(" CLICKING"), false);
       break;
     case CLICKED:
-      oled_write_ln_P(PSTR("  CLICKED"), false);
+      oled_write_ln_P(PSTR(" CLICKED"), false);
       break;
     case NONE:
-      oled_write_ln_P(PSTR("  NONE"), false);
+      oled_write_ln_P(PSTR(" NONE"), false);
       break;
   }
 }

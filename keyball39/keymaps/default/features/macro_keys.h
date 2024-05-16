@@ -32,6 +32,10 @@ enum custom_keycodes {
     KC_TRPB,
     MC_TMUX,
     MC_TMCP,
+    MC_J,
+    MC_K,
+    MC_TAB,
+    MC_STAB,
     MC_ESC,
     SCRL_HO,
     SCRL_VR,
@@ -52,6 +56,7 @@ extern uint16_t horizontal_flag;
 bool hold_ctrl = false;
 bool is_single_tap = true;
 bool is_ime_on = false;
+bool is_lt5_on = false;
 bool is_alt_tab_active = false; // ADD this near the beginning of keymap.c
 uint16_t alt_tab_timer = 0;     // we will be using them soon.
 
@@ -146,6 +151,68 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     switch (keycode) {
+        case LT(5, KC_F): {
+            if (record->event.pressed) {
+                is_lt5_on = true;
+            } else {
+                unregister_code16(KC_RALT);
+                is_lt5_on = false;
+            }
+            return true;
+        }
+        case MC_J: {
+            if (record->event.pressed) {
+                if (is_lt5_on) {
+                    register_code16(KC_RALT);
+                }
+            } else {
+                tap_code16(KC_J);
+                if (!is_lt5_on) {
+                    unregister_code16(KC_RALT);
+                }
+            }
+            return false;
+        }
+        case MC_K: {
+            if (record->event.pressed) {
+                if (is_lt5_on) {
+                    register_code16(KC_RALT);
+                }
+            } else {
+                tap_code16(KC_K);
+                if (!is_lt5_on) {
+                    unregister_code16(KC_RALT);
+                }
+            }
+            return false;
+        }
+        case MC_TAB: {
+            if (record->event.pressed) {
+                if (is_lt5_on) {
+                    register_code16(KC_RALT);
+                }
+            } else {
+                tap_code16(KC_TAB);
+                if (!is_lt5_on) {
+                    unregister_code16(KC_RALT);
+                }
+            }
+            return false;
+        }
+        case MC_STAB: {
+            if (record->event.pressed) {
+                if (is_lt5_on) {
+                    register_code16(KC_RALT);
+                }
+            } else {
+                tap_code16(S(KC_TAB));
+                if (!is_lt5_on) {
+                    unregister_code16(KC_RALT);
+                }
+            }
+            return false;
+        }
+
         // Tmuxのプレフィックス
         case MC_TMUX: {
             if (record->event.pressed) {
