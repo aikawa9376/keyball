@@ -152,6 +152,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     switch (keycode) {
         case LT(4, KC_F): {
+            disable_click_layer();
             if (record->event.pressed) {
                 is_lt4_on = true;
             } else {
