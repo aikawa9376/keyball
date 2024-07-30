@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////////////
 // Configurations
 
+// 多分動かなかったらここ
 #ifndef PMW3360_NCS_PIN
 #    define PMW3360_NCS_PIN B6
 #endif
