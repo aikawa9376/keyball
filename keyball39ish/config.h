@@ -27,6 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET
 #define RP2040_BOOTLOADER_DOUBLE_TAP_RESET_TIMEOUT 200U
 
+/* SPI & PMW3360 settings. */
+#define SPI_DRIVER SPID0
+#define SPI_SCK_PIN GP22
+#define SPI_MISO_PIN GP20
+#define SPI_MOSI_PIN GP23
+#define PMW3360_CS_PINS GP21
+#define POINTING_DEVICE_CS_PIN GP21
+
+#define POINTING_DEVICE_INVERT_X
+#define POINTING_DEVICE_ROTATION_90
+
 // Split parameters
 #define SPLIT_HAND_MATRIX_GRID  GP27, GP9
 #define SPLIT_USB_DETECT
